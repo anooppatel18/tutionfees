@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tuition Fee Record</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    padding: 30px 16px;
+    color: #fff;
+  }
+
+  .container { max-width: 680px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #e2b96f;
+  }
+
+  h1 span { color: #fff; }
+
+  .subtitle { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+
+  /* Form Card */
+  .form-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  .form-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e2b96f;
+    margin-bottom: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width: 480px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field.full { grid-column: 1 / -1; }
+
+  label { font-size: 12px; font-weight: 500; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  input, select {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    padding: 11px 14px;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input::placeholder { color: #64748b; }
+  input:focus, select:focus {
+    border-color: #e2b96f;
+    box-shadow: 0 0 0 3px rgba(226,185,111,0.15);
+  }
+  select { cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
+  }
+  select option { background: #1e293b; color: #fff; }
+
+  .btn-add {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #e2b96f, #c8921a);
+    color: #1a1a2e;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 20px rgba(226,185,111,0.3);
+  }
+  .btn-add:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(226,185,111,0.4); }
+  .btn-add:active { transform: translateY(0); }
+
+  /* Records Table */
+  .records-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 28px;
+    display: none;
+  }
+  .records-card.show { display: block; }
+
+  .records-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .records-title { font-size: 15px; font-weight: 600; color: #e2b96f; text-transform: uppercase; letter-spacing: 0.05em; }
+  .count-badge {
+    background: rgba(226,185,111,0.15);
+    color: #e2b96f;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(226,185,111,0.3);
+  }
+
+  .table-wrap { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.04); }
+  tbody td {
+    padding: 12px 12px;
+    font-size: 14px;
+    color: #e2e8f0;
+    vertical-align: middle;
+  }
+
+  .name-cell { font-weight: 500; color: #fff; }
+  .fee-cell { color: #4ade80; font-weight: 600; }
+
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .status-paid { background: rgba(74,222,128,0.15); color: #4ade80; }
+  .status-pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .status-partial { background: rgba(148,163,184,0.15); color: #94a3b8; }
+
+  .del-btn {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.2);
+    color: #f87171;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .del-btn:hover { background: rgba(239,68,68,0.25); }
+
+  /* Summary bar */
+  .summary-bar {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .summary-item {
+    flex: 1;
+    min-width: 100px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+  .summary-item .s-val { font-size: 20px; font-weight: 700; color: #e2b96f; }
+  .summary-item .s-lbl { font-size: 11px; color: #64748b; margin-top: 3px; }
+
+  .empty-state { text-align: center; padding: 30px; color: #475569; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="icon">🎓</div>
+    <h1>Tuition Fee <span>Record</span></h1>
+    <p class="subtitle">Track student fees easily</p>
+  </header>
+
+  <!-- Entry Form -->
+  <div class="form-card">
+    <div class="form-title">➕ Add Fee Record</div>
+    <div class="grid-2">
+      <div class="field full">
+        <label>Student Name</label>
+        <input type="text" id="studentName" placeholder="Enter student name">
+      </div>
+      <div class="field">
+        <label>Month</label>
+        <select id="month">
+          <option value="">Select Month</option>
+          <option>January</option><option>February</option><option>March</option>
+          <option>April</option><option>May</option><option>June</option>
+          <option>July</option><option>August</option><option>September</option>
+          <option>October</option><option>November</option><option>December</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="date">
+      </div>
+      <div class="field">
+        <label>Fee Amount (₹)</label>
+        <input type="number" id="fee" placeholder="e.g. 2000" min="0">
+      </div>
+      <div class="field">
+        <label>Payment Status</label>
+        <select id="status">
+          <option value="Paid">Paid</option>
+          <option value="Pending">Pending</option>
+          <option value="Partial">Partial</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-add" onclick="addRecord()">Add Record</button>
+  </div>
+
+  <!-- Records -->
+  <div class="records-card" id="recordsCard">
+    <div class="records-header">
+      <div class="records-title">📋 Fee Records</div>
+      <div class="count-badge" id="countBadge">0 records</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Student</th>
+            <th>Month</th>
+            <th>Date</th>
+            <th>Fee</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState">No records yet</div>
+    </div>
+    <div class="summary-bar" id="summaryBar"></div>
+  </div>
+</div>
+
+<script>
+  let records = [];
+
+  // Set today's date by default
+  document.getElementById('date').valueAsDate = new Date();
+
+  function addRecord() {
+    const name = document.getElementById('studentName').value.trim();
+    const month = document.getElementById('month').value;
+    const date = document.getElementById('date').value;
+    const fee = parseFloat(document.getElementById('fee').value);
+    const status = document.getElementById('status').value;
+
+    if (!name) return alert('Please enter student name.');
+    if (!month) return alert('Please select a month.');
+    if (!date) return alert('Please select a date.');
+    if (!fee || fee <= 0) return alert('Please enter a valid fee amount.');
+
+    records.push({ id: Date.now(), name, month, date, fee, status });
+    renderTable();
+    clearForm();
+  }
+
+  function deleteRecord(id) {
+    records = records.filter(r => r.id !== id);
+    renderTable();
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    const empty = document.getElementById('emptyState');
+    const card = document.getElementById('recordsCard');
+
+    card.classList.add('show');
+    document.getElementById('countBadge').textContent = records.length + ' record' + (records.length !== 1 ? 's' : '');
+
+    if (records.length === 0) {
+      tbody.innerHTML = '';
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      tbody.innerHTML = records.map((r, i) => `
+        <tr>
+          <td style="color:#475569">${i + 1}</td>
+          <td class="name-cell">${r.name}</td>
+          <td>${r.month}</td>
+          <td>${formatDate(r.date)}</td>
+          <td class="fee-cell">₹${r.fee.toLocaleString('en-IN')}</td>
+          <td><span class="status-badge status-${r.status.toLowerCase()}">${r.status}</span></td>
+          <td><button class="del-btn" onclick="deleteRecord(${r.id})">✕</button></td>
+        </tr>
+      `).join('');
+    }
+
+    // Summary
+    const total = records.reduce((s, r) => s + r.fee, 0);
+    const paid = records.filter(r => r.status === 'Paid').reduce((s, r) => s + r.fee, 0);
+    const pending = records.filter(r => r.status !== 'Paid').reduce((s, r) => s + r.fee, 0);
+
+    document.getElementById('summaryBar').innerHTML = `
+      <div class="summary-item"><div class="s-val">${records.length}</div><div class="s-lbl">Students</div></div>
+      <div class="summary-item"><div class="s-val">₹${total.toLocaleString('en-IN')}</div><div class="s-lbl">Total Fees</div></div>
+      <div class="summary-item"><div class="s-val" style="color:#4ade80">₹${paid.toLocaleString('en-IN')}</div><div class="s-lbl">Collected</div></div>
+      <div class="summary-item"><div class="s-val" style="color:#fbbf24">₹${pending.toLocaleString('en-IN')}</div><div class="s-lbl">Pending</div></div>
+    `;
+  }
+
+  function formatDate(d) {
+    if (!d) return '';
+    const [y, m, day] = d.split('-');
+    return `${day}/${m}/${y}`;
+  }
+
+  function clearForm() {
+    document.getElementById('studentName').value = '';
+    document.getElementById('month').value = '';
+    document.getElementById('fee').value = '';
+    document.getElementById('status').value = 'Paid';
+    document.getElementById('date').valueAsDate = new Date();
+  }
+</script>
+</body>
+</html>
